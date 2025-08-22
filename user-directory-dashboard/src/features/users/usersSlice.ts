@@ -10,7 +10,21 @@ interface UsersState {
   selectedUser: User | null;
   currentPage: number;
   totalPages: number;
+  favouriteUserIds: number[];
 }
+
+const loadFavourites = (): number[] => {
+  try {
+    const serializedFavorites = localStorage.getItem("favoriteUsers");
+    if (serializedFavorites === null) {
+      return [];
+    }
+    return JSON.parse(serializedFavorites);
+  } catch (err) {
+    console.error("Could not load favorites from localStorage", err);
+    return [];
+  }
+};
 
 const initialState: UsersState = {
   users: [],
@@ -19,6 +33,7 @@ const initialState: UsersState = {
   selectedUser: null,
   currentPage: 1,
   totalPages: 1,
+  favouriteUserIds: loadFavourites(),
 };
 
 export const fetchUsers = createAsyncThunk<UsersApiResponse, number>(
@@ -51,6 +66,22 @@ const usersSlice = createSlice({
     selectUser: (state, action: PayloadAction<User | null>) => {
       state.selectedUser = action.payload;
     },
+    toggleFavourite: (state, action: PayloadAction<number>) => {
+      const userId = action.payload;
+      const isFavourite = state.favouriteUserIds.includes(userId);
+
+      if (isFavourite) {
+        state.favouriteUserIds = state.favouriteUserIds.filter(
+          (id) => id !== userId
+        );
+      } else {
+        state.favouriteUserIds.push(userId);
+      }
+      localStorage.setItem(
+        "favouriteUsers",
+        JSON.stringify(state.favouriteUserIds)
+      );
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -74,5 +105,5 @@ const usersSlice = createSlice({
   },
 });
 
-export const { selectUser } = usersSlice.actions;
+export const { selectUser, toggleFavourite } = usersSlice.actions;
 export default usersSlice.reducer;

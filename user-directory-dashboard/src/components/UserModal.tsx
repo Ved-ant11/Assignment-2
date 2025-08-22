@@ -13,50 +13,19 @@ const UserModal = ({ user }: UserModalProps) => {
     dispatch(selectUser(null));
   };
 
-  const modalStyle: React.CSSProperties = {
-    position: "fixed",
-    top: 0,
-    left: 0,
-    width: "100%",
-    height: "100%",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-  };
-
-  const contentStyle: React.CSSProperties = {
-    backgroundColor: "#fff",
-    padding: "2rem",
-    borderRadius: "8px",
-    textAlign: "center",
-    position: "relative",
-    color: "#333",
-  };
-
-  const closeButtonStyle: React.CSSProperties = {
-    position: "absolute",
-    top: "10px",
-    right: "10px",
-    background: "transparent",
-    border: "none",
-    fontSize: "1.5rem",
-    cursor: "pointer",
-  };
-
   return (
-    <div style={modalStyle} onClick={handleClose}>
-      <div style={contentStyle} onClick={(e) => e.stopPropagation()}>
-        <button style={closeButtonStyle} onClick={handleClose}>
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50" onClick={handleClose}>
+      <div className="bg-white p-6 rounded shadow-lg" onClick={(e) => e.stopPropagation()}>
+        <button className="absolute top-2 right-2 text-gray-500 hover:text-gray-700" onClick={handleClose}>
           &times;
         </button>
         <img
           src={user.avatar}
           alt={`${user.first_name}`}
-          style={{ borderRadius: "50%", width: "120px", height: "120px" }}
+          className="w-24 h-24 rounded-full mb-4 mx-auto object-cover shadow-lg border-2 border-white mb-3"
         />
-        <h2>{`${user.first_name} ${user.last_name}`}</h2>
-        <p>{user.email}</p>
+        <h2 className="text-2xl font-semibold mb-2 text-center color-black">{`${user.first_name} ${user.last_name}`}</h2>
+        <p className="text-gray-600 text-center">{user.email}</p>
       </div>
     </div>
   );

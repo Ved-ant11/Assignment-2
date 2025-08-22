@@ -18,14 +18,14 @@ const Pagination = () => {
   };
 
   return (
-    <div>
-      <button onClick={handlePrev} disabled={currentPage === 1}>
+    <div className="flex justify-center items-center space-x-4 my-4 text-white font-semibold text-lg py-2">
+      <button onClick={handlePrev} disabled={currentPage === 1} className="px-4 py-2 bg-blue-600 rounded disabled:opacity-50 hover:bg-blue-700 transition duration-300 ease-in-out">
         Previous
       </button>
-      <span>
+      <span className="mx-2 text-white font-semibold text-lg py-2">
         Page {currentPage} of {totalPages}
       </span>
-      <button onClick={handleNext} disabled={currentPage === totalPages}>
+      <button onClick={handleNext} disabled={currentPage === totalPages} className="px-4 py-2 bg-blue-600 rounded disabled:opacity-50 hover:bg-blue-700 transition duration-300 ease-in-out ml-3">
         Next
       </button>
     </div>

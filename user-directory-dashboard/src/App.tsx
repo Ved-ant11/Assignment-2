@@ -4,7 +4,8 @@ import { fetchUsers } from "./features/users/usersSlice";
 import UserList from "./components/UserList";
 import Pagination from "./components/Pagination";
 import UserModal from "./components/UserModal";
-
+import Loader from "./components/Loader";
+import { CiSearch } from "react-icons/ci";
 function App() {
   const dispatch = useAppDispatch();
   const { users, status, error, currentPage, selectedUser } = useAppSelector(
@@ -33,25 +34,35 @@ function App() {
   let content;
 
   if (status === "loading") {
-    content = <p>Loading users...</p>;
+    content = <Loader />;
   } else if (status === "succeeded") {
     content = <UserList users={filteredUsers} />;
   } else if (status === "failed") {
-    content = <p>{error}</p>;
+    content = <p className="text-red-700">{error}</p>;
   }
 
   return (
-    <div>
-      <h1>User Directory</h1>
-
-      <input
-        type="text"
-        placeholder="Search by name or email..."
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        style={{ padding: "8px", margin: "10px 0", width: "300px" }}
-      />
-
+    <div className="min-h-screen bg-zinc-900 p-4 md:p-8 lg:p-12 flex flex-col items-center">
+      <h1 className="text-4xl md:text-5xl font-extrabold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent mb-4">
+        User Directory
+      </h1>
+      <p className="text-gray-400 mt-2 text-lg mb-4">
+        Browse and find <span className="text-yellow-200">user</span>{" "}
+        information
+      </p>
+      <div className="relative w-full max-w-md mx-auto mb-4">
+        <CiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xl" />
+        <input
+          type="text"
+          placeholder="Search by name or email..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-full p-2 pl-10 border border-gray-300 rounded bg-zinc-900 text-white 
+               placeholder-gray-400 transition-colors duration-300 
+               focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 
+               hover:bg-zinc-800"
+        />
+      </div>
       {content}
       <Pagination />
       {selectedUser && <UserModal user={selectedUser} />}
