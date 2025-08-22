@@ -25,8 +25,15 @@ export const fetchUsers = createAsyncThunk<UsersApiResponse, number>(
   "users/fetchUsers",
   async (page, { rejectWithValue }) => {
     try {
+      const options = {
+        headers: {
+          "x-api-key": import.meta.env.VITE_API_KEY,
+        },
+        params: { limit: "10" },
+      };
       const response = await axios.get(
-        `https://reqres.in/api/users?page=${page}`
+        `https://reqres.in/api/users?page=${page}`, 
+        options
       );
       return response.data;
     } catch (error: any) {

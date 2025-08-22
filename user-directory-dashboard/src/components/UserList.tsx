@@ -1,7 +1,18 @@
-const UserList = () => {
-  return (
-    <div>UserList</div>
-  )
+import type { User } from "../types/index";
+import UserCard from "./UserCard";
+
+interface UserListProps {
+  users: User[];
 }
 
-export default UserList
+const UserList = ({ users }: UserListProps) => {
+  return (
+    <div>
+      {users.map((user) => (
+        <UserCard key={user.id} user={user} />
+      ))}
+    </div>
+  );
+};
+
+export default UserList;
