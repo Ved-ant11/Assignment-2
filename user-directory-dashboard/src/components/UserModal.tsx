@@ -8,24 +8,34 @@ interface UserModalProps {
 
 const UserModal = ({ user }: UserModalProps) => {
   const dispatch = useAppDispatch();
-
   const handleClose = () => {
     dispatch(selectUser(null));
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50" onClick={handleClose}>
-      <div className="bg-white p-6 rounded shadow-lg" onClick={(e) => e.stopPropagation()}>
-        <button className="absolute top-2 right-2 text-gray-500 hover:text-gray-700" onClick={handleClose}>
+    <div
+      className="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50 p-4"
+      onClick={handleClose}
+    >
+      <div
+        className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-8 text-center relative w-full max-w-sm animate-fade-in-up"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button
+          className="absolute top-2 right-2 text-gray-400 hover:text-white text-2xl"
+          onClick={handleClose}
+        >
           &times;
         </button>
         <img
           src={user.avatar}
           alt={`${user.first_name}`}
-          className="w-24 h-24 rounded-full mb-4 mx-auto object-cover shadow-lg border-2 border-white mb-3"
+          className="w-32 h-32 rounded-full mb-4 border-4 border-blue-500 mx-auto"
         />
-        <h2 className="text-2xl font-semibold mb-2 text-center color-black">{`${user.first_name} ${user.last_name}`}</h2>
-        <p className="text-gray-600 text-center">{user.email}</p>
+        <h2 className="text-3xl font-bold">{`${user.first_name} ${user.last_name}`}</h2>
+        <p className="text-blue-500 dark:text-blue-400 mt-1 text-lg">
+          {user.email}
+        </p>
       </div>
     </div>
   );
