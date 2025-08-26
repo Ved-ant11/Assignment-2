@@ -78,6 +78,7 @@ VITE_API_BASE_URL=https://dummyjson.com/products
 npm run dev    # For Vite
 # or
 npm start      # For CRA
+```
 
 ---
 
