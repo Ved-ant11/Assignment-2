@@ -73,6 +73,14 @@ function App() {
         {content}
         {status === "succeeded" && <Pagination />}
         {selectedUser && <UserModal user={selectedUser} />}
+        <div className="text-center text-sm text-gray-500 dark:text-gray-400 mt-12">
+          &copy; 2025 User Directory. All rights reserved.
+          <br />
+          Built with React, Redux, Typescript.
+          <br />
+          By{" "}
+          <a href="https://github.com/Ved-ant11" target="_blank" className="underline hover:text-cyan-500">Vedant</a>
+        </div>
       </div>
     </div>
   );
