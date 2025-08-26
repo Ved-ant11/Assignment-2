@@ -81,14 +81,19 @@ npm start      # For CRA
 
 ---
 
-Usage
+## Usage  
 
-Add/Edit Products → Use the “Add Product” button or edit existing products.
+### Add/Edit Products  
+Use the **“Add Product”** button or edit existing products.  
 
-Delete Products → Click delete, then confirm.
+### Delete Products  
+Click delete, then confirm.  
 
-Search & Filter → Search by name or filter by category.
+### Search & Filter  
+Search by name or filter by category.  
 
-Sorting → Sort results by name or price.
+### Sorting  
+Sort results by name or price.  
 
-Persistence → Local changes are stored in localStorage.
+### Persistence  
+Local changes are stored in **localStorage**.  
