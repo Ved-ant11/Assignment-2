@@ -11,10 +11,7 @@
   <img alt="TailwindCSS" src="https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white"/>
   <img alt="Vite" src="https://img.shields.io/badge/vite-%23646CFF.svg?style=for-the-badge&logo=vite&logoColor=white"/>
 </p>  
-
-<p align="center">
-  <img src="docs/demo-dashboard.png" width="90%" alt="Inventory Dashboard Screenshot"/>
-</p>  
+  
 
 ---
 
