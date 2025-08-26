@@ -57,7 +57,7 @@ This project fetches paginated user data from the [Reqres API](https://reqres.in
 ### Installation
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/user-directory-dashboard.git
+git clone https://github.com/Ved-ant11/user-directory-dashboard.git
 cd user-directory-dashboard
 
 # Install dependencies
