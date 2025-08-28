@@ -1,6 +1,7 @@
 import type { User } from "../types";
 import { useAppDispatch } from "../app/hooks";
 import { selectUser } from "../features/users/usersSlice";
+import { useNavigate } from "react-router-dom";
 
 interface UserModalProps {
   user: User;
@@ -8,8 +9,14 @@ interface UserModalProps {
 
 const UserModal = ({ user }: UserModalProps) => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+
   const handleClose = () => {
     dispatch(selectUser(null));
+  };
+
+  const handleViewProfile = () => {
+    navigate(`/users/${user.id}`);
   };
 
   return (
@@ -36,6 +43,13 @@ const UserModal = ({ user }: UserModalProps) => {
         <p className="text-blue-500 dark:text-blue-400 mt-1 text-lg">
           {user.email}
         </p>
+
+        <button
+          onClick={handleViewProfile}
+          className="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition-colors"
+        >
+          View Full Profile
+        </button>
       </div>
     </div>
   );

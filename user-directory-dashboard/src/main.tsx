@@ -1,14 +1,27 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import App from './App.tsx'
-import { store } from './app/store.ts'
-import { Provider } from 'react-redux'
+import React from "react";
+import ReactDOM from "react-dom/client";
+import App from "./App.tsx";
+import "./index.css";
+import { Provider } from "react-redux";
+import { store } from "./app/store.ts";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import UserDetailPage from "./pages/UserDetailPage.tsx";
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
+const router = createBrowserRouter([
+  {
+    path: "/", 
+    element: <App />,
+  },
+  {
+    path: "/users/:id", 
+    element: <UserDetailPage />,
+  },
+]);
+
+ReactDOM.createRoot(document.getElementById("root")!).render(
+  <React.StrictMode>
     <Provider store={store}>
-      <App />
+      <RouterProvider router={router} />
     </Provider>
-  </StrictMode>,
-)
+  </React.StrictMode>
+);
