@@ -2,9 +2,10 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
 import type { Product } from "../../types";
+import type { RootState } from "../../app/store";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-
+const API_BASE_URL =
+  import.meta.env.VITE_API_URL;
 const PRODUCTS_STORAGE_KEY = "product_inventory";
 
 function saveProductsToLocalStorage(products: Product[]) {
@@ -18,80 +19,103 @@ function loadProductsFromLocalStorage(): Product[] | null {
 
 const initialProducts = loadProductsFromLocalStorage();
 
+export interface ProductsState {
+  list: Product[];
+  loading: boolean;
+  error: string | null;
+}
+
 const initialState: ProductsState = {
   list: initialProducts ?? [],
   loading: false,
   error: null,
 };
 
-export const fetchProducts = createAsyncThunk<Product[]>(
-  "products/fetchProducts",
-  async (_, { rejectWithValue }) => {
-    try {
-      const response = await axios.get(`${API_BASE_URL}`);
-      return response.data.products as Product[];
-    } catch (error: any) {
-      return rejectWithValue(error.message || "Fetch products failed");
-    }
-  }
-);
+const isLocalProduct = (product: Product) => product.id > 1000000;
 
-export const addProduct = createAsyncThunk<Product, Omit<Product, "id">>(
-  "products/addProduct",
-  async (newProduct, { rejectWithValue }) => {
-    try {
-      const response = await axios.post(`${API_BASE_URL}/add`, newProduct);
-      return response.data as Product;
-    } catch (error: any) {
-      return rejectWithValue(error.message || "Add product failed");
-    }
+export const fetchProducts = createAsyncThunk<
+  Product[],
+  void,
+  { rejectValue: string }
+>("products/fetchProducts", async (_, { rejectWithValue }) => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}`);
+    return response.data.products as Product[];
+  } catch (error: any) {
+    return rejectWithValue(error.message || "Failed to fetch products");
   }
-);
+});
 
-export const updateProduct = createAsyncThunk<Product, Product>(
-  "products/updateProduct",
-  async (updatedProduct, { rejectWithValue }) => {
-    try {
-      const updateFields = {
-        title: updatedProduct.title,
-        description: updatedProduct.description,
-        price: updatedProduct.price,
-        discountPercentage: updatedProduct.discountPercentage,
-        rating: updatedProduct.rating,
-        stock: updatedProduct.stock,
-        brand: updatedProduct.brand,
-        category: updatedProduct.category,
-        thumbnail: updatedProduct.thumbnail,
-      };
-      const response = await axios.put(
-        `${API_BASE_URL}/${updatedProduct.id}`,
-        updateFields
-      );
-      return response.data as Product;
-    } catch (error: any) {
-      return rejectWithValue(error.message || "Update product failed");
-    }
+export const addProduct = createAsyncThunk<
+  Product,
+  Omit<Product, "id">,
+  { rejectValue: string }
+>("products/addProduct", async (newProduct, { rejectWithValue }) => {
+  try {
+    const response = await axios.post(`${API_BASE_URL}/add`, newProduct);
+    const addedProduct = {
+      ...response.data,
+      id: Date.now(),
+    };
+    return addedProduct;
+  } catch (error: any) {
+    return rejectWithValue(error.message || "Failed to add product");
   }
-);
+});
 
-export const deleteProduct = createAsyncThunk<number, number>(
-  "products/deleteProduct",
-  async (id, { rejectWithValue }) => {
-    try {
-      await axios.delete(`${API_BASE_URL}/${id}`);
+export const updateProduct = createAsyncThunk<
+  Product,
+  Product,
+  { rejectValue: string }
+>("products/updateProduct", async (updatedProduct, { rejectWithValue }) => {
+  if (isLocalProduct(updatedProduct)) {
+    return updatedProduct;
+  }
+  try {
+    const updateData = {
+      title: updatedProduct.title,
+      description: updatedProduct.description,
+      price: updatedProduct.price,
+      discountPercentage: updatedProduct.discountPercentage,
+      rating: updatedProduct.rating,
+      stock: updatedProduct.stock,
+      brand: updatedProduct.brand,
+      category: updatedProduct.category,
+      thumbnail: updatedProduct.thumbnail,
+    };
+    const response = await axios.put(
+      `${API_BASE_URL}/${updatedProduct.id}`,
+      updateData
+    );
+    return response.data as Product;
+  } catch (error: any) {
+    if (error.response?.status === 404) {
+      return updatedProduct;
+    }
+    return rejectWithValue(error.message || "Failed to update product");
+  }
+});
+
+export const deleteProduct = createAsyncThunk<
+  number,
+  number,
+  { rejectValue: string; state: RootState }
+>("products/deleteProduct", async (id, { rejectWithValue, getState }) => {
+  const state = getState();
+  const product = state.products.list.find((p) => p.id === id);
+  if (product && isLocalProduct(product)) {
+    return id;
+  }
+  try {
+    await axios.delete(`${API_BASE_URL}/${id}`);
+    return id;
+  } catch (error: any) {
+    if (error.response?.status === 404) {
       return id;
-    } catch (error: any) {
-      return rejectWithValue(error.message || "Delete product failed");
     }
+    return rejectWithValue(error.message || "Failed to delete product");
   }
-);
-
-interface ProductsState {
-  list: Product[];
-  loading: boolean;
-  error: string | null;
-}
-
+});
 
 const productsSlice = createSlice({
   name: "products",
@@ -99,7 +123,6 @@ const productsSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      // fetch products
       .addCase(fetchProducts.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -115,12 +138,8 @@ const productsSlice = createSlice({
       .addCase(fetchProducts.rejected, (state, action) => {
         state.loading = false;
         state.error =
-          (action.payload as string) ||
-          action.error.message ||
-          "Error fetching products";
+          action.payload || action.error.message || "Error fetching products";
       })
-
-      // add product
       .addCase(addProduct.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -136,12 +155,8 @@ const productsSlice = createSlice({
       .addCase(addProduct.rejected, (state, action) => {
         state.loading = false;
         state.error =
-          (action.payload as string) ||
-          action.error.message ||
-          "Error adding product";
+          action.payload || action.error.message || "Error adding product";
       })
-
-      // update product
       .addCase(updateProduct.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -150,20 +165,18 @@ const productsSlice = createSlice({
         updateProduct.fulfilled,
         (state, action: PayloadAction<Product>) => {
           const idx = state.list.findIndex((p) => p.id === action.payload.id);
-          if (idx !== -1) state.list[idx] = action.payload;
+          if (idx !== -1) {
+            state.list[idx] = action.payload;
+            saveProductsToLocalStorage(state.list);
+          }
           state.loading = false;
-          saveProductsToLocalStorage(state.list);
         }
       )
       .addCase(updateProduct.rejected, (state, action) => {
         state.loading = false;
         state.error =
-          (action.payload as string) ||
-          action.error.message ||
-          "Error updating product";
+          action.payload || action.error.message || "Error updating product";
       })
-
-      // delete product
       .addCase(deleteProduct.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -179,9 +192,7 @@ const productsSlice = createSlice({
       .addCase(deleteProduct.rejected, (state, action) => {
         state.loading = false;
         state.error =
-          (action.payload as string) ||
-          action.error.message ||
-          "Error deleting product";
+          action.payload || action.error.message || "Error deleting product";
       });
   },
 });

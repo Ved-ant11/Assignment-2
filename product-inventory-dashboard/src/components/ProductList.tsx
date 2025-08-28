@@ -36,17 +36,14 @@ const ProductList: React.FC = () => {
     setEditProduct(null);
     setModalOpen(true);
   };
-
   const openEditModal = (product: (typeof list)[0]) => {
     setEditProduct(product);
     setModalOpen(true);
   };
-
   const closeModal = () => {
     setModalOpen(false);
     setEditProduct(null);
   };
-
   const handleSubmit = (productData: any, id?: number) => {
     if (id) {
       dispatch(updateProduct({ ...productData, id }));
@@ -54,7 +51,6 @@ const ProductList: React.FC = () => {
       dispatch(addProduct(productData));
     }
   };
-
   const handleDelete = (id: number) => {
     if (window.confirm("Are you sure you want to delete this product?")) {
       dispatch(deleteProduct(id));
@@ -69,23 +65,32 @@ const ProductList: React.FC = () => {
   const categories = Array.from(new Set(list.map((p) => p.category)));
 
   if (loading)
-    return <div className="text-center p-4 text-gray-600">Loading products...</div>;
-  if (error) return <div className="text-center p-4 text-red-600">{error}</div>;
+    return (
+      <div className="text-center p-4 text-gray-600 min-h-[200px]">
+        Loading products...
+      </div>
+    );
+  if (error)
+    return (
+      <div className="text-center p-4 text-red-600 min-h-[200px]">{error}</div>
+    );
 
   return (
-    <div className="text-white p-6 max-w-6xl mx-auto min-h-screen flex flex-col space-y-4 mb-10 sm:mb-0 sm:space-y-0 sm:space-x-4 sm:flex-row sm:flex-wrap sm:justify-center sm:items-start sm:pt-6">
-      <div className="text-white flex flex-col sm:flex-row sm:items-center justify-between mb-6 space-y-4 sm:space-y-0">
+    <div className="text-white p-6 max-w-6xl mx-auto">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 space-y-4 sm:space-y-0">
         <input
           type="text"
           placeholder="Search products..."
-          className="border rounded px-4 py-2 w-full sm:w-1/3 bg-white text-black"
+          className="border rounded px-4 py-2 w-full sm:w-1/3 bg-zinc-700 text-white border-zinc-600 focus:border-indigo-500 focus:ring-indigo-500"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
+          aria-label="Search products"
         />
         <select
-          className="border rounded px-4 py-2 w-full sm:w-1/5 bg-white text-black"
+          className="border rounded px-4 py-2 w-full sm:w-1/5 bg-zinc-700 text-white border-zinc-600 focus:border-indigo-500 focus:ring-indigo-500"
           value={categoryFilter}
           onChange={(e) => setCategoryFilter(e.target.value)}
+          aria-label="Filter by category"
         >
           <option value="">All Categories</option>
           {categories.map((cat) => (
@@ -95,9 +100,10 @@ const ProductList: React.FC = () => {
           ))}
         </select>
         <select
-          className="border rounded px-4 py-2 w-full sm:w-1/5 bg-white text-black "
+          className="border rounded px-4 py-2 w-full sm:w-1/5 bg-zinc-700 text-white border-zinc-600 focus:border-indigo-500 focus:ring-indigo-500"
           value={sortOption}
           onChange={(e) => setSortOption(e.target.value as SortOption)}
+          aria-label="Sort products"
         >
           <option value="nameAsc">Sort by Name (A-Z)</option>
           <option value="nameDesc">Sort by Name (Z-A)</option>
@@ -106,31 +112,50 @@ const ProductList: React.FC = () => {
         </select>
         <button
           onClick={openAddModal}
-          className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 w-full sm:w-auto text-center transition-colors duration-300 ease-in-out"
+          className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 w-full sm:w-auto transition-colors duration-300 ease-in-out"
+          aria-label="Add new product"
         >
           Add New Product
         </button>
       </div>
-
       {filtered.length === 0 ? (
         <p className="text-center col-span-full text-gray-600 w-full p-4">
           No products found.
         </p>
       ) : (
-        <div className="bg-zinc-900 grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 w-full p-4 bg-white rounded-lg text-black bg-opacity-10 shadow-lg animate-fade-in animate-duration-1000 animate-ease-in animate-fill-both animate-delay-300 animate-iteration-count-1">
+        <div
+          className="
+          bg-zinc-900 
+          grid 
+          gap-6 
+          grid-cols-1 
+          sm:grid-cols-2 
+          md:grid-cols-3 
+          lg:grid-cols-4 
+          xl:grid-cols-5 
+          w-full 
+          p-4 
+          bg-white 
+          rounded-lg 
+          text-black 
+          bg-opacity-10 
+          shadow-lg
+          items-start
+        "
+        >
           {filtered.map((product) => (
             <div key={product.id} className="relative group">
               <ProductCard product={product} />
-              <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition flex space-x-2">
+              <div className="absolute top-2 right-2 flex gap-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition">
                 <button
                   onClick={() => openEditModal(product)}
-                  className="bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600 transition duration-300 ease-in-out"
+                  className="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600 transition duration-300 ease-in-out"
                 >
                   Edit
                 </button>
                 <button
                   onClick={() => handleDelete(product.id)}
-                  className="bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700 transition duration-300 ease-in-out"
+                  className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition duration-300 ease-in-out"
                 >
                   Delete
                 </button>
@@ -139,7 +164,6 @@ const ProductList: React.FC = () => {
           ))}
         </div>
       )}
-
       <ProductFormModal
         isOpen={modalOpen}
         onClose={closeModal}
