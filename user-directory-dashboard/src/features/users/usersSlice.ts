@@ -13,9 +13,11 @@ interface UsersState {
   favouriteUserIds: number[];
 }
 
+const FAVOURITE_USERS_KEY = "favouriteUsers";
+
 const loadFavourites = (): number[] => {
   try {
-    const serializedFavorites = localStorage.getItem("favoriteUsers");
+    const serializedFavorites = localStorage.getItem(FAVOURITE_USERS_KEY);
     if (serializedFavorites === null) {
       return [];
     }
@@ -23,6 +25,14 @@ const loadFavourites = (): number[] => {
   } catch (err) {
     console.error("Could not load favorites from localStorage", err);
     return [];
+  }
+};
+
+const saveFavourites = (favourites: number[]): void => {
+  try {
+    localStorage.setItem(FAVOURITE_USERS_KEY, JSON.stringify(favourites));
+  } catch (err) {
+    console.error("Could not save favorites to localStorage", err);
   }
 };
 
@@ -47,7 +57,7 @@ export const fetchUsers = createAsyncThunk<UsersApiResponse, number>(
         params: { limit: "10" },
       };
       const response = await axios.get(
-        `https://reqres.in/api/users?page=${page}`, 
+        `https://reqres.in/api/users?page=${page}`,
         options
       );
       return response.data;
@@ -77,10 +87,8 @@ const usersSlice = createSlice({
       } else {
         state.favouriteUserIds.push(userId);
       }
-      localStorage.setItem(
-        "favouriteUsers",
-        JSON.stringify(state.favouriteUserIds)
-      );
+
+      saveFavourites(state.favouriteUserIds);
     },
   },
   extraReducers: (builder) => {
